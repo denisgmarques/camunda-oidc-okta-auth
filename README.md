@@ -8,7 +8,7 @@ Pre-requisites:
 
 - Okta admin account
 - Git
-- Java 8
+- Java 11
 - Maven
 
 ### Setting Up Okta and application.properties
@@ -103,7 +103,7 @@ if we already have one:
 
 1. Maven
 
-   #### Remember, you need Java 8 and maven to run this project on your computer
+   #### Remember, you need Java 11 and maven to run this project on your computer
 
    - Go to the root of this project and type:
 
