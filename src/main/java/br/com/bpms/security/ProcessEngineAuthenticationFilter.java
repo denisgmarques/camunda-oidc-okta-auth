@@ -1,10 +1,11 @@
 package br.com.bpms.security;
 
+import br.com.bpms.okta.authentication.AuthUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
-import org.camunda.bpm.engine.identity.Group;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProcessEngineAuthenticationFilter implements Filter {
 
@@ -37,9 +37,9 @@ public class ProcessEngineAuthenticationFilter implements Filter {
             return;
         }
         try {
-            if (request.getHeader("username") != null) {
-                final String userId = request.getHeader("username");
-                this.setAuthenticatedUser(engine, userId, this.getGroupIdsForUser(engine, userId), new ArrayList<>());
+            if (request.getUserPrincipal() != null && request.getUserPrincipal().getName() != null) {
+                final String userId = request.getUserPrincipal().getName();
+                this.setAuthenticatedUser(engine, userId, AuthUtils.getUserGroups((OAuth2User) request.getUserPrincipal(), userId), new ArrayList<>());
                 chain.doFilter(req, res);
             } else {
                 response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
@@ -52,15 +52,6 @@ public class ProcessEngineAuthenticationFilter implements Filter {
     protected void setAuthenticatedUser(final ProcessEngine engine, final String userId,
                                         final List<String> groupIds, final List<String> tenantIds) {
         engine.getIdentityService().setAuthentication(userId, groupIds, tenantIds);
-    }
-
-    protected List<String> getGroupIdsForUser(final ProcessEngine engine, final String userId){
-        final List<Group> groups = engine.getIdentityService().createGroupQuery()
-                .groupMember(userId)
-            .list();
-        return groups.stream()
-                .map(Group::getId)
-            .collect(Collectors.toList());
     }
 
     protected void clearAuthentication(final ProcessEngine engine) {

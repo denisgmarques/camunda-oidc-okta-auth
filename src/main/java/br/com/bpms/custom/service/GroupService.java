@@ -27,7 +27,7 @@ public class GroupService {
 
     private CustomGroup fromOktaGroup(final Group oktaGroup){
         return CustomGroup.builder()
-                .id(oktaGroup.getId())
+                .id(oktaGroup.getProfile().getName())
                 .name(oktaGroup.getProfile().getName())
                 .type("")
             .build();

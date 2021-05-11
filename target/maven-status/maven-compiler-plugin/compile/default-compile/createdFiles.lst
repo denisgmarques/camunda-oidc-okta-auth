@@ -4,6 +4,7 @@ br/com/bpms/custom/plugin/CustomTenantQuery.class
 br/com/bpms/okta/model/OktaGroup$Profile.class
 br/com/bpms/okta/model/OktaUser.class
 br/com/bpms/custom/entity/CustomGroup$CustomGroupBuilder.class
+br/com/bpms/okta/authentication/OktaAuthUtils.class
 br/com/bpms/custom/plugin/CustomGroupQuery.class
 br/com/bpms/okta/model/OktaUser$Profile$ProfileBuilder.class
 br/com/bpms/custom/plugin/CustomUserQuery.class

@@ -1,11 +1,10 @@
 package br.com.bpms.okta.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.rest.security.auth.AuthenticationResult;
 import org.camunda.bpm.engine.rest.security.auth.impl.ContainerBasedAuthenticationProvider;
-import org.camunda.bpm.engine.rest.util.EngineUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +12,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class OktaAuthenticationProvider extends ContainerBasedAuthenticationProvider {
@@ -45,18 +44,18 @@ public class OktaAuthenticationProvider extends ContainerBasedAuthenticationProv
         }
 
         final AuthenticationResult result = new AuthenticationResult(userId, true);
-        result.setGroups(this.getUserGroups(userId, EngineUtil.lookupProcessEngine("default")));
+        result.setGroups(AuthUtils.getUserGroups(authentication.getPrincipal(), userId));
+
         return result;
     }
 
-    private List<String> getUserGroups(final String userId, final ProcessEngine engine) {
-        return engine.getIdentityService()
-                .createGroupQuery()
-                .groupMember(userId)
-                .list()
-                .stream()
-                .map(Group::getId)
-            .collect(Collectors.toList());
+    private List<String> extractGroupsFromToken(JSONArray groupsJson) {
+        ArrayList<String> groupList = new ArrayList<>();
+        if (groupsJson != null) {
+            for (int i=0;i<groupsJson.size();i++){
+                groupList.add(groupsJson.get(i).toString());
+            }
+        }
+        return groupList;
     }
-
 }

@@ -64,7 +64,7 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
         registration.setFilter(this.getProcessEngineAuthenticationFilter());
         registration.addInitParameter("authentication-provider",
                 ProcessEngineAuthenticationFilter.class.getName());
-        registration.setOrder(101);
+        registration.setOrder(102);
         registration.addUrlPatterns("/engine-rest/*");
         return registration;
     }
